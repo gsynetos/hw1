@@ -153,65 +153,62 @@ if Jacobi == "yes":
                 v_newk[k] = (Upper[k,k+IM]*vk[k+IM] + Lower[k,k-IM]*vk[k-IM] + Upper[k,k+1]*vk[k+1] + Lower[k,k-1]*vk[k-1] + b[k] )/ Diag[k,k]
 
 
-        residual = b - np.dot(A,v_newk)
-        print("residual=\n",residual)
-        res = np.linalg.norm(residual)
-        print("norm",res)
+        res = np.linalg.norm(b - np.dot(A,v_newk)) #calculate the residual
         
 
-        # #Convergence data
-        # counter.append(iteration)
-        # #residual.append(res)
+        #Convergence data
+        counter.append(iteration)
+        residual.append(res)
         iteration += 1
 
-        # #Error
-        # e = (uk - v_newk)
-        # error.append(np.linalg.norm(e))
+        #Error
+        e = (uk - v_newk)
+        error.append(np.linalg.norm(e))
         
     print("After",iteration," iterations,",
          "the residual on the final iteration is ",res)
+    print("The vector {v} at last iteration was calculated to be=\n",v_newk.reshape(JM,IM))
+    print("The is error at last iteration = \n",np.linalg.norm(e))
 
-#print("error=",e)
-    
-    
-#v_new = v_newk.reshape(JM,IM)
-#print("v_new=\n",v_new)
+        
+v_new = v_newk.reshape(JM,IM)
+
   
 
-# #-------------------------------
-# #Plot Contour Lines
-# #-------------------------------       
-# # Create Grid
-# X, Y = np.meshgrid(np.arange(0, L, L/IM), np.arange(0, H, H/JM))
-# # Configure the contour
-# cp = plt.contour(X, Y, v_new)
-# plt.clabel(cp, inlie=True, fontsie=10)
-# plt.title("Contour Lines")
-# plt.xlabel('x-axis')
-# plt.ylabel('y-axis')
-# # Set Colorbar
-# plt.colorbar()
-# # Show the result in the plot window
-# plt.show()   
+#-------------------------------
+#Plot Contour Lines
+#-------------------------------       
+# Create Grid
+X, Y = np.meshgrid(np.arange(0, L, L/IM), np.arange(0, H, H/JM))
+# Configure the contour
+cp = plt.contour(X, Y, v_new)
+plt.clabel(cp, inlie=True, fontsie=10)
+plt.title("Contour Lines")
+plt.xlabel('x-axis')
+plt.ylabel('y-axis')
+# Set Colorbar
+plt.colorbar()
+# Show the result in the plot window
+plt.show()   
 
-# #-------------------------------
-# #Plot Convergence
-# #-------------------------------  
-# plt.plot(counter, residual)
-# plt.yscale('symlog')
-# plt.title('Convergence')
-# plt.xlabel('iterations')
-# plt.ylabel('residual log_10')
-# plt.grid(True)
-# plt.show()
+#-------------------------------
+#Plot Convergence
+#-------------------------------  
+plt.plot(counter, residual)
+plt.yscale('symlog')
+plt.title('Convergence')
+plt.xlabel('iterations')
+plt.ylabel('residual log_10')
+plt.grid(True)
+plt.show()
 
-# #-------------------------------
-# #Plot Error
-# #-------------------------------  
-# plt.plot(counter, error)
-# plt.title('error')
-# plt.yscale('symlog')
-# plt.xlabel('iterations')
-# plt.ylabel('error')
-# plt.grid(True)
-# plt.show()
+#-------------------------------
+#Plot Error
+#-------------------------------  
+plt.plot(counter, error)
+plt.title('error')
+plt.yscale('symlog')
+plt.xlabel('iterations')
+plt.ylabel('error')
+plt.grid(True)
+plt.show()
