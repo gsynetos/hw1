@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #Set the Grid
 #-------------------------------
 L, H = 1,1 #Size of the grid (Length,Height)
-IM,JM =4,4 #Number of columns & rows
+IM,JM =15,15 #Number of columns & rows
 Dx,Dy = L/(IM-1) , H/(JM-1)
 a = Dx/Dy 
 f = 4 # Η τιμή απο τη εξίσωση Poison που καλούμαστε να λύσουμε
@@ -130,12 +130,13 @@ def conditional_number(matrix):
     return cond_a
 
 cond_a = conditional_number(A)
+print("The conditional number of Matrix A = ",cond_a)
 
-Jacobi = "yes"
+Jacobi = "no"
 if Jacobi == "yes":
-    #-------------------------------
-    #Jacobi Method
-    #-------------------------------
+#-------------------------------
+#Jacobi Method
+#-------------------------------
     v_newk = vk[:]
     counter= list()
     residual = list()
@@ -144,71 +145,143 @@ if Jacobi == "yes":
     error = list()
     res=1
     iteration = 0
-    while res > 10**-6 and iteration in range(0, 100) :
+    while res > 10**-6 and iteration in range(0, 1000) :
         restot = 0
         vk[:]=v_newk
+        for i in range(1, JM-1):
+            for j in range(1, IM-1):
+                k= i*IM + j
+        # for k in range (IM*JM):
+            # if k not in BN:
 
-        for k in range (IM*JM):
-            if k not in BN:
-                v_newk[k] = (Upper[k,k+IM]*vk[k+IM] + Lower[k,k-IM]*vk[k-IM] + Upper[k,k+1]*vk[k+1] + Lower[k,k-1]*vk[k-1] + b[k] )/ Diag[k,k]
+                v_newk[k] = (Upper[k,k+IM]*vk[k+IM] + Lower[k,k-IM]*vk[k-IM] \
+                    + Upper[k,k+1]*vk[k+1] + Lower[k,k-1]*vk[k-1] + b[k] )/ Diag[k,k]
 
 
         res = np.linalg.norm(b - np.dot(A,v_newk)) #calculate the residual
-        
+
 
         #Convergence data
         counter.append(iteration)
         residual.append(res)
         iteration += 1
 
-        #Error
+        #Calculate the Error
         e = (uk - v_newk)
         error.append(np.linalg.norm(e))
-        
+
+       #Print unequality 3 of the notes
+        uneq_1 = ((1/cond_a) * np.linalg.norm(res)) / np.linalg.norm(b)
+        uneq_2 = np.linalg.norm(e) / np.linalg.norm(v_newk)
+        uneq_3 = (cond_a * np.linalg.norm(res)) / np.linalg.norm(b)
+        print("At iteration",iteration, "the bounds are:",
+            uneq_1, "=<", uneq_2, "=<", uneq_3)        
+    
+    #Prin Final Message 
     print("After",iteration," iterations,",
          "the residual on the final iteration is ",res)
     print("The vector {v} at last iteration was calculated to be=\n",v_newk.reshape(JM,IM))
     print("The is error at last iteration = \n",np.linalg.norm(e))
+    v_new = v_newk.reshape(JM,IM)
+
+GaussSeidel = "yes"
+if GaussSeidel == "yes":
+#-------------------------------
+#Gauss Seidel
+#-------------------------------
+    counter= list()
+    residual = list()
+    e = list()
+    resid = list()
+    error = list()
+    res=1
+    iteration = 0
+    vtmp = np.empty((JM,IM))
+    vtmp = vtmp.flatten()
+    omega = 1.15
+    while res > 10**-6 and iteration in range(0, 1000) :
+        restot = 0
+        vtmp[:] = vk
+
+        for i in range(1, JM-1):
+            for j in range(1, IM-1):
+                k= i*IM + j
+
+                vk[k] = (Upper[k,k+IM]*vk[k+IM] + Lower[k,k-IM]*vk[k-IM] \
+                    + Upper[k,k+1]*vk[k+1] + Lower[k,k-1]*vk[k-1] + b[k] ) / Diag[k,k]
+        
+        # for i in range(1, JM-1):
+        #     for j in range(1, IM-1):
+        #         k = i*IM + j
+                vk[k] = vtmp[k] + omega*(vk[k]-vtmp[k])
+
+        res = np.linalg.norm(b - np.dot(A,vk)) #calculate the residual
+
+
+        #Convergence data
+        counter.append(iteration)
+        residual.append(res)
+        iteration += 1
+
+        #Calculate the Error
+        e = (uk - vk)
+        error.append(np.linalg.norm(e))
+
+       #Print unequality 3 of the notes
+        uneq_1 = ((1/cond_a) * np.linalg.norm(res)) / np.linalg.norm(b)
+        uneq_2 = np.linalg.norm(e) / np.linalg.norm(vk)
+        uneq_3 = (cond_a * np.linalg.norm(res)) / np.linalg.norm(b)
+        print("At iteration",iteration, "the bounds are:",
+            uneq_1, "=<", uneq_2, "=<", uneq_3)        
+    
+    #Print Final Message 
+    print("After",iteration," iterations,",
+         "the residual on the final iteration is ",res)
+    print("The vector {v} at last iteration was calculated to be=\n",vk.reshape(JM,IM))
+    print("The is error at last iteration = \n",np.linalg.norm(e))
+
+    # v_newk[:] = vk
+    # v_new = v_newk.reshape(JM,IM)
+
 
         
-v_new = v_newk.reshape(JM,IM)
 
   
 
-#-------------------------------
-#Plot Contour Lines
-#-------------------------------       
-# Create Grid
-X, Y = np.meshgrid(np.arange(0, L, L/IM), np.arange(0, H, H/JM))
-# Configure the contour
-cp = plt.contour(X, Y, v_new)
-plt.clabel(cp, inlie=True, fontsie=10)
-plt.title("Contour Lines")
-plt.xlabel('x-axis')
-plt.ylabel('y-axis')
-# Set Colorbar
-plt.colorbar()
-# Show the result in the plot window
-plt.show()   
+# #-------------------------------
+# #Plot Contour Lines
+# #-------------------------------       
+# # Create Grid
+# X, Y = np.meshgrid(np.arange(0, L, L/IM), np.arange(0, H, H/JM))
+# # Configure the contour
+# cp = plt.contour(X, Y, v_new)
+# plt.clabel(cp, inlie=True, fontsie=10)
+# plt.title("Contour Lines")
+# plt.xlabel('x-axis')
+# plt.ylabel('y-axis')
+# # Set Colorbar
+# plt.colorbar()
+# # Show the result in the plot window
+# plt.show()   
 
-#-------------------------------
-#Plot Convergence
-#-------------------------------  
-plt.plot(counter, residual)
-plt.yscale('symlog')
-plt.title('Convergence')
-plt.xlabel('iterations')
-plt.ylabel('residual log_10')
-plt.grid(True)
-plt.show()
+# #-------------------------------
+# #Plot Convergence
+# #-------------------------------  
+# plt.plot(counter, residual)
+# plt.yscale('symlog')
+# plt.title('Convergence')
+# plt.xlabel('iterations')
+# plt.ylabel('residual log_10')
+# plt.grid(True)
+# plt.show()
 
-#-------------------------------
-#Plot Error
-#-------------------------------  
-plt.plot(counter, error)
-plt.title('error')
-plt.yscale('symlog')
-plt.xlabel('iterations')
-plt.ylabel('error')
-plt.grid(True)
-plt.show()
+# #-------------------------------
+# #Plot Error
+# #-------------------------------  
+# plt.plot(counter, error)
+# plt.title('error')
+# plt.yscale('symlog')
+# plt.xlabel('iterations')
+# plt.ylabel('error')
+# plt.grid(True)
+# plt.show()
