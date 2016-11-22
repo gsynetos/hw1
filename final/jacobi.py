@@ -83,7 +83,9 @@ BN = sorted(BN)
 #-------------------------------
 #Vector b
 #-------------------------------
+
 b = np.empty(IM*JM)
+b[:] = vk
 for k in range (IM*JM):
     if k not in BN:
         b[k]=4
@@ -111,11 +113,13 @@ for k in range (IM*JM):
 
 
 #-------------------------------
-#Matrix Decomposition
+#Matrix Decomposition D-(L+U)
 #-------------------------------
 Diag = np.diag(np.diag(A))
 Lower = np.tril(A,-1)
+Lower = -Lower
 Upper = np.triu(A,1)
+Upper = -Upper
 
 #-------------------------------
 #Conditional Number
@@ -146,31 +150,14 @@ if Jacobi == "yes":
 
         for k in range (IM*JM):
             if k not in BN:
-                v_newk[k] = (-Upper[k,k+IM]*vk[k+IM] - Lower[k,k-IM]*vk[k-IM]- Upper[k,k+1]*vk[k+1] - Lower[k,k-1]*vk[k-1] + b[k] )/ Diag[k,k]
-                #v_newk[k] = (-Upper[k,k+IM]*vk[k+IM] - Lower[k,k-IM]*vk[k-IM]- Upper[k,k+1]*vk[k+1] - Lower[k,k-1]*vk[k-1] + b[k] )
-                # #print("v_new=",v_newk)
-                # #print("Av[k]=",np.dot(A[k],v_newk))
-                # dotproduct = A[k,k+IM]*vk[k+IM] + A[k,k-IM]*vk[k-IM] + A[k,k+1]*vk[k+1] + A[k,k-1]*vk[k-1] +A[k,k]*vk[k]
-                # print("k=",k,"\nA[k,k+IM]*vk[k+IM]",A[k,k+IM],"*",vk[k+IM],"=",A[k,k+IM]*vk[k+IM])
-                # print("A[k,k-IM]*vk[k-IM]",A[k,k-IM],"*",vk[k-IM],"=",A[k,k-IM]*vk[k-IM])
-                # print("A[k,k-1]*vk[k-1]",A[k,k-1],"*",vk[k-1],"=",A[k,k-1]*vk[k-1])
-                # print("A[k,k+1]*vk[k+1]",A[k,k+1],"*",vk[k+1],"=",A[k,k+1]*vk[k+1])
-                # print("A[k,k]*vk[k]",A[k,k],"*",vk[k],"=",A[k,k]*vk[k])
-                # #print("at node,",k,"dot product = \n",dotproduct)
-                # resi = b[k] - dotproduct
-                # print("dotproduct =",dotproduct)
+                v_newk[k] = (Upper[k,k+IM]*vk[k+IM] + Lower[k,k-IM]*vk[k-IM] + Upper[k,k+1]*vk[k+1] + Lower[k,k-1]*vk[k-1] + b[k] )/ Diag[k,k]
 
-                # print("b[k] =",b[k])
-                # print("resi =",resi)
-                # restot = restot + resi
-                # print("residual total= ",restot)
-        print("b\n",b)
-        print("v_new\n",v_newk)
-        residual = b - v_newk
+
+        residual = b - np.dot(A,v_newk)
         print("residual=\n",residual)
-        residualnorm = np.linalg.norm(residual)
-        print("norm",residualnorm)
-        # #res = np.linalg.norm(restot)
+        res = np.linalg.norm(residual)
+        print("norm",res)
+        
 
         # #Convergence data
         # counter.append(iteration)
@@ -181,8 +168,8 @@ if Jacobi == "yes":
         # e = (uk - v_newk)
         # error.append(np.linalg.norm(e))
         
-    #print("After",iteration," iterations,",
-     #     "the residual on the final iteration is ",res)
+    print("After",iteration," iterations,",
+         "the residual on the final iteration is ",res)
 
 #print("error=",e)
     
