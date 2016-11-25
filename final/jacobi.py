@@ -7,8 +7,11 @@ import matplotlib.pyplot as plt
 #-------------------------------
 #Set the Grid
 #-------------------------------
+n_iter = 1000 # Maximum Number of iterations
+
 L, H = 1,1 #Size of the grid (Length,Height)
-IM,JM =15,15 #Number of columns & rows
+IM,JM =10,10 #Number of columns & rows
+
 Dx,Dy = L/(IM-1) , H/(JM-1)
 a = Dx/Dy 
 f = 4 # Η τιμή απο τη εξίσωση Poison που καλούμαστε να λύσουμε
@@ -19,6 +22,8 @@ v = np.empty((JM, IM))
 v_new = np.empty((JM, IM))
 A= np.empty((JM, IM))
 v.fill(v_init)
+
+
 
 #-------------------------------
 #Analytical Solution
@@ -132,7 +137,7 @@ def conditional_number(matrix):
 cond_a = conditional_number(A)
 print("The conditional number of Matrix A = ",cond_a)
 
-Jacobi = "no"
+Jacobi = "yes"
 if Jacobi == "yes":
 #-------------------------------
 #Jacobi Method
@@ -145,7 +150,7 @@ if Jacobi == "yes":
     error = list()
     res=1
     iteration = 0
-    while res > 10**-6 and iteration in range(0, 1000) :
+    while res > 10**-6 and iteration in range(0, n_iter) :
         restot = 0
         vk[:]=v_newk
         for i in range(1, JM-1):
@@ -178,13 +183,14 @@ if Jacobi == "yes":
             uneq_1, "=<", uneq_2, "=<", uneq_3)        
     
     #Prin Final Message 
+    print("Jacobi Method")
     print("After",iteration," iterations,",
          "the residual on the final iteration is ",res)
-    print("The vector {v} at last iteration was calculated to be=\n",v_newk.reshape(JM,IM))
+    #print("The vector {v} at last iteration was calculated to be=\n",v_newk.reshape(JM,IM))
     print("The is error at last iteration = \n",np.linalg.norm(e))
     v_new = v_newk.reshape(JM,IM)
 
-GaussSeidel = "yes"
+GaussSeidel = "n"
 if GaussSeidel == "yes":
 #-------------------------------
 #Gauss Seidel
@@ -199,7 +205,7 @@ if GaussSeidel == "yes":
     vtmp = np.empty((JM,IM))
     vtmp = vtmp.flatten()
     omega = 1.15
-    while res > 10**-6 and iteration in range(0, 1000) :
+    while res > 10**-6 and iteration in range(0, n_iter) :
         restot = 0
         vtmp[:] = vk
 
@@ -235,10 +241,11 @@ if GaussSeidel == "yes":
             uneq_1, "=<", uneq_2, "=<", uneq_3)        
     
     #Print Final Message 
+    print("Gauss-Siedel method, with relaxation omage=",omega)
     print("After",iteration," iterations,",
          "the residual on the final iteration is ",res)
-    print("The vector {v} at last iteration was calculated to be=\n",vk.reshape(JM,IM))
-    print("The is error at last iteration = \n",np.linalg.norm(e))
+    # print("The vector {v} at last iteration \n {v} =\n",vk.reshape(JM,IM))
+    print("The is error at final iteration = \n",np.linalg.norm(e))
 
     # v_newk[:] = vk
     # v_new = v_newk.reshape(JM,IM)
