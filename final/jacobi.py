@@ -137,7 +137,7 @@ def conditional_number(matrix):
 cond_a = conditional_number(A)
 print("The conditional number of Matrix A = ",cond_a)
 
-Jacobi = "yes"
+Jacobi = "n"
 if Jacobi == "yes":
 #-------------------------------
 #Jacobi Method
@@ -190,7 +190,7 @@ if Jacobi == "yes":
     print("The is error at last iteration = \n",np.linalg.norm(e))
     v_new = v_newk.reshape(JM,IM)
 
-GaussSeidel = "n"
+GaussSeidel = "yes"
 if GaussSeidel == "yes":
 #-------------------------------
 #Gauss Seidel
@@ -247,48 +247,49 @@ if GaussSeidel == "yes":
     # print("The vector {v} at last iteration \n {v} =\n",vk.reshape(JM,IM))
     print("The is error at final iteration = \n",np.linalg.norm(e))
 
-    # v_newk[:] = vk
-    # v_new = v_newk.reshape(JM,IM)
+
+    v_new = vk.reshape(JM,IM)
+
 
 
         
 
   
 
-# #-------------------------------
-# #Plot Contour Lines
-# #-------------------------------       
-# # Create Grid
-# X, Y = np.meshgrid(np.arange(0, L, L/IM), np.arange(0, H, H/JM))
-# # Configure the contour
-# cp = plt.contour(X, Y, v_new)
-# plt.clabel(cp, inlie=True, fontsie=10)
-# plt.title("Contour Lines")
-# plt.xlabel('x-axis')
-# plt.ylabel('y-axis')
-# # Set Colorbar
-# plt.colorbar()
-# # Show the result in the plot window
-# plt.show()   
+#-------------------------------
+#Plot Contour Lines
+#-------------------------------       
+# Create Grid
+X, Y = np.meshgrid(np.arange(0, L, L/IM), np.arange(0, H, H/JM))
+# Configure the contour
+cp = plt.contour(X, Y, v_new)
+plt.clabel(cp, inlie=True, fontsie=10)
+plt.title("Contour Lines")
+plt.xlabel('x-axis')
+plt.ylabel('y-axis')
+# Set Colorbar
+plt.colorbar()
+# Show the result in the plot window
+plt.show()   
 
-# #-------------------------------
-# #Plot Convergence
-# #-------------------------------  
-# plt.plot(counter, residual)
-# plt.yscale('symlog')
-# plt.title('Convergence')
-# plt.xlabel('iterations')
-# plt.ylabel('residual log_10')
-# plt.grid(True)
-# plt.show()
+#-------------------------------
+#Plot Convergence
+#-------------------------------  
+plt.plot(counter, residual)
+plt.yscale('symlog')
+plt.title('Convergence')
+plt.xlabel('iterations')
+plt.ylabel('residual log_10')
+plt.grid(True)
+plt.show()
 
-# #-------------------------------
-# #Plot Error
-# #-------------------------------  
-# plt.plot(counter, error)
-# plt.title('error')
-# plt.yscale('symlog')
-# plt.xlabel('iterations')
-# plt.ylabel('error')
-# plt.grid(True)
-# plt.show()
+#-------------------------------
+#Plot Error
+#-------------------------------  
+plt.plot(counter, error)
+plt.title('error')
+plt.yscale('symlog')
+plt.xlabel('iterations')
+plt.ylabel('error')
+plt.grid(True)
+plt.show()
